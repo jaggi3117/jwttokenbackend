@@ -57,5 +57,22 @@ app.post('/signin', function(req, res){
         )
     }
 })
+
+app.get('/me', function(req,res){
+    const token = req.headers.authorization
+    let user = users.find(function(u){
+        return u.token === token
+    })
+    if(user){
+        res.send({
+            "message": user.username
+        })
+    }
+    else{
+        res.status(401).send({
+            "message": "unauthorized"
+        })
+    }
+})
 app.listen(3000)
 
