@@ -1,22 +1,12 @@
 const express = require('express')
+const jwt = require('jsonwebtoken')
 
 const app = express()
 
 app.use(express.json())
 
 const users = []
-
-
-//first try to generate a random token by myself
-function generatetoken(){
-    let options = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    let token = ""
-    for(let i = 0; i<32; i++){
-        token = token + options[Math.floor(Math.random()*options.length)]
-    }
-    return token
-}
-
+const jwt_secret = "myjwtsecret23e4"
 
 app.get('/', function(req,res){
     res.send('default endpoint ready')
@@ -42,7 +32,10 @@ app.post('/signin', function(req, res){
         return user.username === username && user.password === password
     })
     if(user && user.password == password){
-        const token = generatetoken()
+        const token = jwt.sign({
+            "username": username,
+            "password": password
+        }, jwt_secret)
         user.token = token
         res.send({
             'token': token
@@ -60,8 +53,11 @@ app.post('/signin', function(req, res){
 
 app.get('/me', function(req,res){
     const token = req.headers.authorization
+    const userdetails = jwt.verify(token, jwt_secret)
+    const username = userdetails.username
+    const password = userdetails.password
     let user = users.find(function(u){
-        return u.token === token
+        return u.username === username && u.password === password
     })
     if(user){
         res.send({
@@ -76,3 +72,5 @@ app.get('/me', function(req,res){
 })
 app.listen(3000)
 
+//jaggi -: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphZ2dpdXNlciIsInBhc3N3b3JkIjoiamFnZ2lwYXNzIiwiaWF0IjoxNzQyMzA0MDQ2fQ.XYNpAReMZeIWzEOxlC8vwQLgm6vd0SexWByaNIKTXIc
+//lokesh -: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxva2VzaCIsInBhc3N3b3JkIjoiamFnZ2lwYXNzIiwiaWF0IjoxNzQyMzA0MDk1fQ.nikjcjmG-AA7z5nZWhawq8G0V2TsmIzpN0k8QSji9SM
