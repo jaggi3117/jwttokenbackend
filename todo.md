@@ -1,3 +1,3 @@
-1. create a simple api
-2. should support jwt token for auth
-3. should return user specific information not all information 
+- [ ] create a simple api
+- [ ] should support jwt token for auth
+- [ ] should return user specific information not all information 
