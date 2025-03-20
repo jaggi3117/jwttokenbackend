@@ -7,7 +7,27 @@ app.use(express.json())
 
 const users = []
 const jwt_secret = "myjwtsecret23e4"
-
+let currentuser
+function jwtauth(req,res,next){
+    const token = req.body.authorization
+    if(token){
+        try{
+            currentuser = jwt.verify(token,jwt_secret)
+            next()
+        }
+        catch(error){
+            console.log("jwt verification failed")
+            res.status(401).send({
+                message: "error while authorization"
+            })
+        }
+    }
+    else{
+        res.status(401).send({
+            message: "error while authorization"
+        })
+    }
+}
 app.get('/', function(req,res){
     res.send('default endpoint ready')
 })
@@ -34,7 +54,6 @@ app.post('/signin', function(req, res){
     if(user && user.password == password){
         const token = jwt.sign({
             "username": username,
-            "password": password
         }, jwt_secret)
         user.token = token
         res.send({
@@ -51,13 +70,11 @@ app.post('/signin', function(req, res){
     }
 })
 
-app.get('/me', function(req,res){
-    const token = req.headers.authorization
-    const userdetails = jwt.verify(token, jwt_secret)
-    const username = userdetails.username
-    const password = userdetails.password
+app.get('/me', jwtauth,  function(req,res){
+    username = currentuser.username
+    
     let user = users.find(function(u){
-        return u.username === username && u.password === password
+        return u.username === username 
     })
     if(user){
         res.send({
