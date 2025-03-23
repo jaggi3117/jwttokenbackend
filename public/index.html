@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simpleapp</title>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script> 
+    <!-- axios -->
+    <div>
+        signup
+        <input type="text" name="username" placeholder="username" id="signup-username">
+        <input type="password" name="password" placeholder="password" id="signup-password">
+        <button onclick="signup()">submit</button>
+    </div>
+    <div>
+        signin
+        <input type="text" name="username" placeholder="username" id="signin-username">
+        <input type="password" name="password" placeholder="password" id="signin-password">
+        <button onclick="signin()">sign-in</button>
+    </div>
+    <div>
+        user information:
+        <div id = "information"></div>
+    </div>
+    <div>
+        <button onclick="logout()">log-out</button>
+    </div>
+    <script>
+        async function signup(){
+            const username = document.getElementById("signup-username").value 
+            const password = document.getElementById("signup-password").value
+            const respone = await axios.post("http://localhost:3000/signup", {
+                username: username,
+                password: password
+            })
+            alert("signed up succesfully")
+        }
+    </script>
+    
+</body>
+</html>
